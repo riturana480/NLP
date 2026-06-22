@@ -1,0 +1,21 @@
+Transformers and the Attention Mechanism
+
+The Transformer architecture, introduced by Vaswani et al. in 2017 in the paper "Attention Is All You Need," revolutionized natural language processing. Unlike recurrent neural networks (RNNs) and long short-term memory (LSTM) networks that process tokens sequentially, Transformers process all tokens in parallel, making them significantly faster and more scalable.
+
+At the core of the Transformer is the self-attention mechanism. Self-attention allows the model to weigh the importance of each word in a sequence relative to every other word. For a given input token, attention scores are computed using three learned projections: Query (Q), Key (K), and Value (V). The attention output is computed as: Attention(Q, K, V) = softmax(QK^T / sqrt(d_k)) * V, where d_k is the dimension of the key vectors. This scaled dot-product attention prevents vanishing gradients when dimensions are large.
+
+Multi-head attention extends self-attention by running multiple attention operations in parallel, each with different learned projections. This allows the model to simultaneously attend to information from different representational subspaces at different positions. Each head captures different types of relationships — syntactic, semantic, or coreference relationships.
+
+Positional encoding is added to token embeddings to give the model information about the order of tokens, since self-attention is permutation-invariant. The original Transformer uses sinusoidal positional encodings, while later models like BERT use learned positional embeddings.
+
+The Transformer encoder stack consists of multiple identical layers, each containing a multi-head self-attention sub-layer followed by a position-wise fully connected feed-forward network (FFN). Residual connections and layer normalization are applied around each sub-layer to stabilize training.
+
+BERT (Bidirectional Encoder Representations from Transformers) by Google uses only the encoder part of the Transformer. BERT is pre-trained on two tasks: Masked Language Modeling (MLM), where 15% of tokens are masked and the model predicts them, and Next Sentence Prediction (NSP). BERT produces bidirectional context representations, making it powerful for understanding tasks.
+
+GPT (Generative Pre-trained Transformer) by OpenAI uses only the decoder part with causal (unidirectional) attention. GPT models are trained to predict the next token given previous tokens, making them ideal for text generation. GPT-3 has 175 billion parameters and demonstrated remarkable few-shot learning capabilities.
+
+T5 (Text-to-Text Transfer Transformer) by Google reformulates all NLP tasks as text-to-text problems, using a sequence-to-sequence Transformer with both encoder and decoder. Tasks like translation, summarization, and question answering are all framed as mapping input text to output text.
+
+The key challenges with Transformers include their quadratic complexity with respect to sequence length in the attention computation (O(n^2) for n tokens), which limits the context window. Models like Longformer and BigBird address this with sparse attention patterns, achieving O(n log n) or O(n) complexity. More recently, Flash Attention provides an IO-aware exact attention algorithm that is both faster and more memory-efficient.
+
+Transformers have been applied successfully in computer vision (Vision Transformer, ViT), speech processing (Wav2Vec), protein structure prediction (AlphaFold2), and code generation (Codex, GitHub Copilot). Their success stems from their ability to model long-range dependencies and scale effectively with data and compute.

@@ -1,0 +1,23 @@
+Retrieval-Augmented Generation (RAG) Systems
+
+Retrieval-Augmented Generation (RAG) is a framework that enhances large language models (LLMs) by providing them with relevant external knowledge at inference time. Instead of relying solely on parametric knowledge encoded in model weights during training, RAG systems retrieve relevant documents from an external knowledge base and condition the generation on that retrieved context.
+
+RAG was formally introduced by Lewis et al. in 2020 in "Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks." The core idea is to combine a parametric memory (the LLM) with a non-parametric memory (a document retrieval system) to improve factual accuracy and reduce hallucinations.
+
+The RAG pipeline consists of three main components: the document corpus (knowledge base), the retriever, and the generator. The knowledge base stores all available documents or chunks of text. The retriever finds the most relevant documents given a query. The generator, typically a pre-trained LLM, produces an answer conditioned on the retrieved documents and the original query.
+
+There are two main types of retrieval: sparse retrieval and dense retrieval. Sparse retrieval methods like BM25 and TF-IDF rely on keyword matching and inverted indexes. They are efficient and interpretable but fail to capture semantic similarity. Dense retrieval uses neural embeddings to represent queries and documents in a shared vector space, enabling semantic search. Dense retrievers like DPR (Dense Passage Retrieval) and sentence-transformers produce fixed-size embeddings that allow similarity search using cosine similarity or dot product.
+
+Vector stores or vector databases (e.g., FAISS, Chroma, Pinecone, Weaviate) efficiently store and retrieve dense embeddings at scale. FAISS (Facebook AI Similarity Search) supports billion-scale similarity search using approximate nearest neighbor (ANN) algorithms like HNSW (Hierarchical Navigable Small World) graphs and IVF (Inverted File Index).
+
+Document chunking is a critical preprocessing step in RAG. Long documents must be split into smaller chunks before embedding, since embedding models have token limits (typically 512 tokens) and LLM context windows are finite. Common strategies include fixed-size chunking (splitting by a fixed number of words or tokens), sentence-based chunking, and recursive character text splitters that respect paragraph and sentence boundaries. Chunk overlap ensures continuity of context across chunks, typically 10-20% of the chunk size.
+
+Embedding models convert text into dense vector representations. Popular choices include sentence-transformers models like all-MiniLM-L6-v2 (384 dimensions, fast), all-mpnet-base-v2 (768 dimensions, higher quality), and OpenAI's text-embedding-ada-002. The choice of embedding model significantly impacts retrieval quality.
+
+The retrieval step uses the query embedding to find the top-k most similar chunks in the vector store. The value of k is a hyperparameter — too small and the model may miss relevant context; too large and irrelevant chunks may confuse the generator. Common values are k=2 to k=5 depending on chunk size and task complexity.
+
+Reranking is an optional step where retrieved chunks are further filtered using a cross-encoder model that jointly encodes the query and each candidate document. Cross-encoders are slower but more accurate than bi-encoders for relevance scoring.
+
+Common failure modes of RAG systems include retrieval failure (relevant context is not retrieved), context overflow (too many chunks exceed the LLM context window), and generation failure (the model ignores retrieved context or generates hallucinations despite correct retrieval). Evaluation metrics include Retrieval Recall, MRR (Mean Reciprocal Rank), and end-to-end metrics like RAGAS (Retrieval Augmented Generation Assessment) which measures faithfulness, answer relevancy, and context precision.
+
+Advanced RAG techniques include HyDE (Hypothetical Document Embeddings), where a hypothetical answer is generated first and used for retrieval; multi-hop RAG, which retrieves iteratively across multiple reasoning steps; and Self-RAG, which teaches the model to decide when to retrieve and to critique its own outputs.
